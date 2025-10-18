@@ -1,0 +1,73 @@
+## Ignore Visual Studio temporary files, build results, and
+## user-specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build directories
+bin/
+obj/
+
+## Visual Studio profiler
+*.psess
+*.vsp
+
+# Rider
+.idea/
+
+## Visual Studio Code workspace files
+.vscode/
+
+## NuGet
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+!**/packages/build/**
+
+## dotnet publish outputs
+publish/
+**/publish/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## IIS Express
+/.vs/**/applicationhost.config
+/.vs/**/iissettings.json
+
+## User-specific files
+*_history
+*.log
+
+## OS generated files
+.DS_Store
+Thumbs.db
+
+## JetBrains Rider
+.idea/
+
+## npm / node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+## Visual Studio Code
+.vscode/*
+!.vscode/extensions.json
+
+## Local DB files
+*.mdf
+*.ldf
+
+## Azure Web App publish settings
+*.PublishSettings
+
+## certificates
+*.pfx
+
+## Others
+secret.json
+appsettings.*.json
