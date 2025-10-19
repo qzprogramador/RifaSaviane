@@ -109,6 +109,131 @@ namespace SavianeRifa.Controllers
             return View();
         }
 
+        [HttpGet("/reservas")]
+        public IActionResult Reservations(string? q)
+        {
+            // search by name or email (email used only for search, not exposed)
+            var query = _context.PaymentInformations.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var term = q.Trim().ToLower();
+                query = query.Where(p => p.Name.ToLower().Contains(term) || p.Email.ToLower().Contains(term));
+            }
+
+            var list = query
+                .OrderByDescending(p => p.RegisteredAt)
+                .Select(p => new SavianeRifa.Models.ReservationListItem
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    RegisteredAt = p.RegisteredAt,
+                    Location = p.Location,
+                    TotalRifas = p.Rifas.Count,
+                    ReservedCount = p.Rifas.Count(r => r.Status == "Reservada"),
+                    SoldCount = p.Rifas.Count(r => r.Status == "Vendida"),
+                    Status = p.Rifas.Any(r => r.Status == "Reservada") ? "Reservada" : (p.Rifas.Any(r => r.Status == "Vendida") ? "Vendida" : "Nenhuma")
+                })
+                .ToList();
+
+            ViewData["Query"] = q ?? string.Empty;
+            return View("Reservations", list);
+        }
+
+        [HttpPost("/submit-payment")]
+        [RequestSizeLimit(10_000_000)] // allow uploads up to ~10MB
+        public async Task<IActionResult> SubmitPayment([FromForm] string name, [FromForm] string phone, [FromForm] string email,
+            [FromForm] string pixCopy, [FromForm] string selectedRifas, [FromForm] decimal amount, IFormFile? comprovante, [FromForm] string location)
+        {
+            // validate basic fields
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("", "Nome, telefone e email são obrigatórios.");
+                return BadRequest(ModelState);
+            }
+
+            // parse selected rifas (can be comma-separated ids or JSON array)
+            var rifasIds = new List<int>();
+            if (!string.IsNullOrWhiteSpace(selectedRifas))
+            {
+                try
+                {
+                    // try JSON array first
+                    if (selectedRifas.TrimStart().StartsWith("["))
+                    {
+                        rifasIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(selectedRifas) ?? new List<int>();
+                    }
+                    else
+                    {
+                        rifasIds = selectedRifas.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => int.TryParse(s.Trim(), out var id) ? id : 0)
+                            .Where(id => id > 0)
+                            .ToList();
+                    }
+                }
+                catch
+                {
+                    // ignore parse errors and continue with empty list
+                    rifasIds = new List<int>();
+                }
+            }
+
+            // save uploaded file (if any)
+            string? savedFilePath = null;
+            if (comprovante != null && comprovante.Length > 0)
+            {
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+                var fileName = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(comprovante.FileName);
+                var filePath = Path.Combine(uploadsPath, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await comprovante.CopyToAsync(stream);
+                }
+                // relative path for web access
+                savedFilePath = "/uploads/" + fileName;
+            }
+
+            // create PaymentInformation record
+            var payment = new PaymentInformation
+            {
+                Name = name,
+                PhoneNumber = phone,
+                Email = email,
+                PixCopyPaste = pixCopy ?? string.Empty,
+                Amount = amount,
+                RegisteredAt = DateTime.Now,
+                ComprovantePath = savedFilePath ?? string.Empty,
+                Location = location
+
+            };
+
+            _context.PaymentInformations.Add(payment);
+            await _context.SaveChangesAsync();
+
+            // mark rifas as reservada and link to payment
+            if (rifasIds.Any())
+            {
+                var rifasToUpdate = _context.Rifas.Where(r => rifasIds.Contains(r.Id)).ToList();
+                foreach (var r in rifasToUpdate)
+                {
+                    r.PaymentInformationId = payment.Id;
+                    r.Status = "Reservada";
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // prepare view model for confirmation
+            var reserved = _context.Rifas
+                .Where(r => r.PaymentInformationId == payment.Id)
+                .Select(r => new { r.Id, r.Number, r.Price, r.Status })
+                .ToList();
+
+            ViewData["Payment"] = payment;
+            ViewData["ReservedRifas"] = reserved;
+
+            return View("Confirmation");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

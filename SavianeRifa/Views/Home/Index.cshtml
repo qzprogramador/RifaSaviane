@@ -46,7 +46,7 @@
 <div class="modal fade" id="pixModal" tabindex="-1" aria-labelledby="pixModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="padding: 20px;">
-            <form asp-controller="Home" asp-action="RegistrarCompra" method="post" enctype="multipart/form-data">
+            <form id="pix-form" action="/submit-payment" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="pixModalLabel">Pagamento via PIX</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -68,25 +68,30 @@
 
                     <!-- Campos do comprador -->
                     <div class="mb-3">
-                        <label for="Nome" class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="Nome" name="Nome" required />
+                        <label for="name" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="name" name="name" required />
                     </div>
                     <div class="mb-3">
-                        <label for="Telefone" class="form-label">Telefone</label>
-                        <input type="tel" class="form-control" id="Telefone" name="Telefone" required />
+                        <label for="phone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required />
                     </div>
                     <div class="mb-3">
-                        <label for="Email" class="form-label">E-mail</label>
-                        <input type="email" class="form-control" id="Email" name="Email" required />
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" required />
                     </div>
                     <div class="mb-3">
-                        <label for="Email" class="form-label">Localidade</label>
-                        <input type="email" class="form-control" id="Email" name="Email" required />
+                        <label for="location" class="form-label">Localidade</label>
+                        <input type="text" class="form-control" id="location" name="location" />
                     </div>
                     <div class="mb-3">
-                        <label for="Comprovante" class="form-label">Comprovante de Pagamento (imagem ou PDF)</label>
-                        <input type="file" class="form-control" id="Comprovante" name="Comprovante" accept=".jpg,.jpeg,.png,.pdf" required />
+                        <label for="comprovante" class="form-label">Comprovante de Pagamento (imagem ou PDF)</label>
+                        <input type="file" class="form-control" id="comprovante" name="comprovante" accept=".jpg,.jpeg,.png,.pdf" required />
                     </div>
+
+                    <!-- hidden fields populated before submit -->
+                    <input type="hidden" id="selectedRifas" name="selectedRifas" />
+                    <input type="hidden" id="amount" name="amount" />
+                    <input type="hidden" id="pixCopyHidden" name="pixCopy" />
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Registrar Pagamento</button>
@@ -315,6 +320,28 @@
                 alert('Selecione e copie a chave manualmente: ' + keyEl.value);
             }
         });
+
+        // before submitting the form, populate hidden inputs with selected rifas and total
+        const pixForm = document.getElementById('pix-form');
+        if (pixForm) {
+            pixForm.addEventListener('submit', function (ev) {
+                // ensure there is at least one selected
+                if (selectedMap.size === 0) {
+                    ev.preventDefault();
+                    alert('Por favor selecione ao menos uma rifa antes de registrar o pagamento.');
+                    return;
+                }
+
+                const ids = Array.from(selectedMap.keys()).map(k => parseInt(k, 10));
+                document.getElementById('selectedRifas').value = JSON.stringify(ids);
+                // send amount with two decimals (in case server expects decimal parseable format)
+                document.getElementById('amount').value = calculateTotal().toFixed(2);
+                const pixVal = (document.getElementById('pix-key') && document.getElementById('pix-key').value) || '';
+                document.getElementById('pixCopyHidden').value = pixVal;
+
+                // allow form to submit normally (multipart/form-data)
+            });
+        }
 
         // Observação: renderRifas é chamado após a fetch preencher `rifas`.
     </script>

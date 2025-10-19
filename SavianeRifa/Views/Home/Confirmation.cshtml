@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Confirmação de Reserva";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Reserva registrada</h3>
+                <p class="lead">Obrigado! Sua solicitação foi registrada e as rifas selecionadas foram marcadas como <strong>Reservada</strong> até a confirmação do pagamento pelo administrador.</p>
+
+                <h5>Dados do pagamento</h5>
+                @{ var payment = ViewData["Payment"] as SavianeRifa.Models.PaymentInformation; }
+                @if (payment != null)
+                {
+                    <ul>
+                        <li><strong>Nome:</strong> @payment.Name</li>
+                        <li><strong>Telefone:</strong> @payment.PhoneNumber</li>
+                        <li><strong>Email:</strong> @payment.Email</li>
+                        <li><strong>Localidade:</strong> @payment.Location</li>
+                        <li><strong>PIX (copia/cola):</strong> @payment.PixCopyPaste</li>
+                        <li><strong>Valor informado:</strong> @(payment.Amount.ToString("C"))</li>
+                        <li><strong>Comprovante:</strong> @if(!string.IsNullOrWhiteSpace(payment.ComprovantePath)) { <a href="@payment.ComprovantePath" target="_blank">Ver comprovante</a> } else { <span>Não enviado</span> }</li>
+                        <li><strong>Registro em:</strong> @payment.RegisteredAt.ToString("g")</li>
+                    </ul>
+                }
+
+                <h5>Rifas reservadas</h5>
+                @{ var reserved = ViewData["ReservedRifas"] as IEnumerable<dynamic>; }
+                @if (reserved != null && reserved.Any())
+                {
+                    <ul>
+                        @foreach (var r in reserved)
+                        {
+                            <li>Rifa @r.Number — @(((decimal)r.Price).ToString("C")) — <em>@r.Status</em></li>
+                        }
+                    </ul>
+                }
+
+                <div class="mt-3">
+                    <a href="/" class="btn btn-primary">Voltar ao início</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

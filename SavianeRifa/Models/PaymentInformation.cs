@@ -5,6 +5,7 @@ namespace SavianeRifa.Models
         public int Id { get; set; }
         // Informação do payload/clipboard do PIX (p.ex. payload ou chave)
         public string PixCopyPaste { get; set; } = string.Empty;
+        public string ComprovantePath { get; set; } = string.Empty;
 
         public string City { get; set; } = string.Empty;
         public string TxtId { get; set; } = string.Empty;

@@ -1,0 +1,54 @@
+@model List<SavianeRifa.Models.ReservationListItem>
+@{
+    ViewData["Title"] = "Reservas";
+    var q = ViewData["Query"] as string ?? string.Empty;
+}
+
+<div class="row">
+    <div class="col-12 mb-3">
+        <h3>Reservas e confirmações</h3>
+        <p class="text-muted">Pesquise por nome ou e-mail (o e-mail é usado apenas para busca e não será exibido).</p>
+        <form method="get" action="/reservas" class="d-flex gap-2">
+            <input name="q" value="@q" class="form-control" placeholder="Nome ou e-mail" />
+            <button class="btn btn-primary">Pesquisar</button>
+            <a href="/reservas" class="btn btn-outline-secondary">Limpar</a>
+        </form>
+    </div>
+
+    <div class="col-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Localidade</th>
+                    <th>Total Rifas</th>
+                    <th>Reservadas</th>
+                    <th>Vendidas</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.RegisteredAt.ToString("g")</td>
+                            <td>@item.Location</td>
+                            <td>@item.TotalRifas</td>
+                            <td>@item.ReservedCount</td>
+                            <td>@item.SoldCount</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted">Nenhuma reserva encontrada.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
