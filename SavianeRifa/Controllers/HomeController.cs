@@ -14,15 +14,17 @@ namespace SavianeRifa.Controllers
             try
             {
                 valorPix = double.Parse(total.ToString("0.00")).ToString().Replace(",", ".");
+
                 var pix = new Payload(
                 nome: "Saviane Da Silva de Souza",
-                chavepix: "02459626207",
+                chavepix: "04143373289",
                 valor: valorPix,
                 cidade: "MANAUS",
                 txtId: "6909009062345"
             );
-                var qrcodeBase64 = pix.GerarPayload();
-                return Ok(new { Pix = pix.PixCopiaCola, QrCodeBase64 = qrcodeBase64 });
+            
+            var qrcodeBase64 = pix.GerarPayload();
+            return Ok(new { Pix = pix.PixCopiaCola, QrCodeBase64 = qrcodeBase64 });
 
             }
             catch (Exception ex)
@@ -52,7 +54,7 @@ namespace SavianeRifa.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return BadRequest(new { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
