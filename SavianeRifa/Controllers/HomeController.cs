@@ -1,11 +1,26 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SavianeRifa.Models;
+using SavianeRifa.Services;
 
 namespace SavianeRifa.Controllers
 {
     public class HomeController : Controller
     {
+        [HttpGet("/pix")]
+        public IActionResult Pix()
+        {
+            var pix = new Payload(
+                nome: "ANDREY COSTA DE QUEIROZ",
+                chavepix: "02459626207",
+                valor: "500.00",
+                cidade: "MANAUS",
+                txtId: "6909009062345"
+            );
+            pix.GerarPayload();
+            return Ok(pix.PixCopiaCola);
+        }   
+
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
