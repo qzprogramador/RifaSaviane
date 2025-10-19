@@ -10,8 +10,6 @@ namespace SavianeRifa.Controllers
     public class HomeController : Controller
     {
 
-        
-
         private readonly ILogger<HomeController> _logger;
 
         private readonly AppDbContext _context;
@@ -101,7 +99,7 @@ namespace SavianeRifa.Controllers
 
             var list = query
                 .OrderByDescending(p => p.RegisteredAt)
-                .Select(p => new SavianeRifa.Models.ReservationListItem
+                .Select(p => new ReservationListItem
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -161,7 +159,7 @@ namespace SavianeRifa.Controllers
             string? savedFilePath = null;
             if (comprovante != null && comprovante.Length > 0)
             {
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "../uploads");
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "../../uploads");
                 if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
                 var fileName = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(comprovante.FileName);
                 var filePath = Path.Combine(uploadsPath, fileName);
@@ -205,11 +203,17 @@ namespace SavianeRifa.Controllers
             // mark rifas as reservada and link to payment
             if (rifasIds.Any())
             {
-                var rifasToUpdate = _context.Rifas.Where(r => rifasIds.Contains(r.Id)).ToList();
-                foreach (var r in rifasToUpdate)
+                // Some SQL Server versions/compatibility levels may generate complex SQL for IN queries
+                // (which can include CTEs/ WITH ) and cause syntax errors. To avoid that, fetch by primary key
+                // using FindAsync for each id (simple SELECT by PK) and update.
+                foreach (var id in rifasIds)
                 {
-                    r.PaymentInformationId = payment.Id;
-                    r.Status = "Reservada";
+                    var r = await _context.Rifas.FindAsync(id);
+                    if (r != null)
+                    {
+                        r.PaymentInformationId = payment.Id;
+                        r.Status = "Reservada";
+                    }
                 }
                 await _context.SaveChangesAsync();
             }
