@@ -334,8 +334,8 @@
 
                 const ids = Array.from(selectedMap.keys()).map(k => parseInt(k, 10));
                 document.getElementById('selectedRifas').value = JSON.stringify(ids);
-                // send amount with two decimals (in case server expects decimal parseable format)
-                document.getElementById('amount').value = calculateTotal().toFixed(2);
+                // send amount with two decimals using dot as decimal separator (invariant)
+                document.getElementById('amount').value = calculateTotal().toFixed(2).toString().replace(',', '.');
                 const pixVal = (document.getElementById('pix-key') && document.getElementById('pix-key').value) || '';
                 document.getElementById('pixCopyHidden').value = pixVal;
 

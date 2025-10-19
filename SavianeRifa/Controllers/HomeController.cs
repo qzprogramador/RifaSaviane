@@ -28,7 +28,7 @@ namespace SavianeRifa.Controllers
             try
             {
                 string valorPix = double.Parse(total.ToString("0.00")).ToString().Replace(",", ".");
-
+                Console.WriteLine($"Valor para PIX: {valorPix}");
                 var pix = new Payload(
                 nome: "Saviane Da Silva de Souza",
                 chavepix: "04143373289",
@@ -53,32 +53,6 @@ namespace SavianeRifa.Controllers
             return View();
         }
 
-         [HttpPost]
-    public async Task<IActionResult> RegistrarCompra(string Nome, string Telefone, string Email, IFormFile Comprovante)
-    {
-        // 1. Salvar o comprovante em disco ou banco
-        string filePath = Path.Combine("wwwroot/comprovantes", Comprovante.FileName);
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await Comprovante.CopyToAsync(stream);
-        }
-
-        // 2. Registrar no banco (exemplo simplificado)
-        var compra = new PaymentInformation
-        {
-            Name = Nome,
-            PhoneNumber = Telefone,
-            Email = Email,
-            RegisteredAt = DateTime.Now
-        };
-
-        // TODO: salvar no banco via Entity Framework
-        // _context.Compras.Add(compra);
-        // await _context.SaveChangesAsync();
-
-        // 3. Retornar página de confirmação
-        return View("Confirmacao", compra);
-    }
 
         [HttpGet("/rifas")]
         public IActionResult Rifas(int page = 1, int pageSize = 50)
@@ -142,8 +116,9 @@ namespace SavianeRifa.Controllers
         [HttpPost("/submit-payment")]
         [RequestSizeLimit(10_000_000)] // allow uploads up to ~10MB
         public async Task<IActionResult> SubmitPayment([FromForm] string name, [FromForm] string phone, [FromForm] string email,
-            [FromForm] string pixCopy, [FromForm] string selectedRifas, [FromForm] decimal amount, IFormFile? comprovante, [FromForm] string location)
+            [FromForm] string pixCopy, [FromForm] string selectedRifas, [FromForm] string amount, IFormFile? comprovante, [FromForm] string location)
         {
+            Console.WriteLine($"ammount: {amount}");
             // validate basic fields
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(email))
             {
@@ -181,7 +156,7 @@ namespace SavianeRifa.Controllers
             string? savedFilePath = null;
             if (comprovante != null && comprovante.Length > 0)
             {
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "uploads");
                 if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
                 var fileName = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(comprovante.FileName);
                 var filePath = Path.Combine(uploadsPath, fileName);
@@ -193,6 +168,19 @@ namespace SavianeRifa.Controllers
                 savedFilePath = "/uploads/" + fileName;
             }
 
+            // parse amount robustly (try invariant then pt-BR), fallback to 0 on failure
+            decimal parsedAmount = 0m;
+            if (!string.IsNullOrWhiteSpace(amount))
+            {
+                // try invariant first (decimal point)
+                if (!decimal.TryParse(amount, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out parsedAmount))
+                {
+                    // try pt-BR (comma decimal separator)
+                    var pt = new System.Globalization.CultureInfo("pt-BR");
+                    decimal.TryParse(amount, System.Globalization.NumberStyles.Number, pt, out parsedAmount);
+                }
+            }
+
             // create PaymentInformation record
             var payment = new PaymentInformation
             {
@@ -200,11 +188,10 @@ namespace SavianeRifa.Controllers
                 PhoneNumber = phone,
                 Email = email,
                 PixCopyPaste = pixCopy ?? string.Empty,
-                Amount = amount,
+                Amount = parsedAmount,
                 RegisteredAt = DateTime.Now,
                 ComprovantePath = savedFilePath ?? string.Empty,
-                Location = location
-
+                Location = location ?? string.Empty
             };
 
             _context.PaymentInformations.Add(payment);

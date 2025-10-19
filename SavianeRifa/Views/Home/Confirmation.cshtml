@@ -19,8 +19,7 @@
                         <li><strong>Email:</strong> @payment.Email</li>
                         <li><strong>Localidade:</strong> @payment.Location</li>
                         <li><strong>PIX (copia/cola):</strong> @payment.PixCopyPaste</li>
-                        <li><strong>Valor informado:</strong> @(payment.Amount.ToString("C"))</li>
-                        <li><strong>Comprovante:</strong> @if(!string.IsNullOrWhiteSpace(payment.ComprovantePath)) { <a href="@payment.ComprovantePath" target="_blank">Ver comprovante</a> } else { <span>Não enviado</span> }</li>
+                        <li><strong>Valor informado:</strong> @(payment.Amount.ToString())</li>
                         <li><strong>Registro em:</strong> @payment.RegisteredAt.ToString("g")</li>
                     </ul>
                 }
