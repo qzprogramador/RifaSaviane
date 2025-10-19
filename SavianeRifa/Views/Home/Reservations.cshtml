@@ -11,44 +11,34 @@
         <form method="get" action="/reservas" class="d-flex gap-2">
             <input name="q" value="@q" class="form-control" placeholder="Nome ou e-mail" />
             <button class="btn btn-primary">Pesquisar</button>
-            <a href="/reservas" class="btn btn-outline-secondary">Limpar</a>
+            <a href="/reservas" class="btn btn-outline-primary">Limpar</a>
         </form>
     </div>
 
-    <div class="col-12">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Data</th>
-                    <th>Localidade</th>
-                    <th>Total Rifas</th>
-                    <th>Reservadas</th>
-                    <th>Vendidas</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.Name</td>
-                            <td>@item.RegisteredAt.ToString("g")</td>
-                            <td>@item.Location</td>
-                            <td>@item.TotalRifas</td>
-                            <td>@item.ReservedCount</td>
-                            <td>@item.SoldCount</td>
-                            <td>@item.Status</td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr><td colspan="7" class="text-center text-muted">Nenhuma reserva encontrada.</td></tr>
-                }
-            </tbody>
-        </table>
+    <div class="col-12 reservations-list">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="reservation-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-1">@item.Name</h5>
+                            <div class="reservation-meta">@item.RegisteredAt.ToString("g") • @item.Location</div>
+                        </div>
+                        <div class="text-end">
+                            <div>Total: <strong>@item.TotalRifas</strong></div>
+                            <div>Reservadas: <strong>@item.ReservedCount</strong></div>
+                            <div>Vendidas: <strong>@item.SoldCount</strong></div>
+                            <div>Status: <span class="badge bg-secondary">@item.Status</span></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center text-muted">Nenhuma reserva encontrada.</div>
+        }
     </div>
 </div>
