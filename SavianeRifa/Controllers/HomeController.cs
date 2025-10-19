@@ -53,6 +53,33 @@ namespace SavianeRifa.Controllers
             return View();
         }
 
+         [HttpPost]
+    public async Task<IActionResult> RegistrarCompra(string Nome, string Telefone, string Email, IFormFile Comprovante)
+    {
+        // 1. Salvar o comprovante em disco ou banco
+        string filePath = Path.Combine("wwwroot/comprovantes", Comprovante.FileName);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await Comprovante.CopyToAsync(stream);
+        }
+
+        // 2. Registrar no banco (exemplo simplificado)
+        var compra = new PaymentInformation
+        {
+            Name = Nome,
+            PhoneNumber = Telefone,
+            Email = Email,
+            RegisteredAt = DateTime.Now
+        };
+
+        // TODO: salvar no banco via Entity Framework
+        // _context.Compras.Add(compra);
+        // await _context.SaveChangesAsync();
+
+        // 3. Retornar página de confirmação
+        return View("Confirmacao", compra);
+    }
+
         [HttpGet("/rifas")]
         public IActionResult Rifas(int page = 1, int pageSize = 50)
         {
