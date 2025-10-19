@@ -81,11 +81,6 @@ namespace SavianeRifa.Controllers
             return Json(new { items, totalCount });
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [HttpGet("/reservas")]
         public IActionResult Reservations(string? q)
         {
