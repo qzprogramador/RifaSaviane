@@ -54,7 +54,7 @@ namespace SavianeRifa.Controllers
         }
 
         [HttpGet("/rifas")]
-        public IActionResult Rifas(int page = 1, int pageSize = 100)
+        public IActionResult Rifas(int page = 1, int pageSize = 50)
         {
             if (page < 1) page = 1;
             if (pageSize < 1) pageSize = 100;
