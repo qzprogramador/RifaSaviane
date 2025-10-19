@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SavianeRifa.Data;
+using Microsoft.EntityFrameworkCore;
 using SavianeRifa.Models;
 using SavianeRifa.Services;
 
@@ -7,13 +9,25 @@ namespace SavianeRifa.Controllers
 {
     public class HomeController : Controller
     {
+
+        
+
+        private readonly ILogger<HomeController> _logger;
+
+        private readonly AppDbContext _context;
+
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
+        {
+            _logger = logger;
+            _context = context;
+        }
+        
         [HttpGet("/pix")]
         public IActionResult Pix(double total)
         {
-            string valorPix = "";
             try
             {
-                valorPix = double.Parse(total.ToString("0.00")).ToString().Replace(",", ".");
+                string valorPix = double.Parse(total.ToString("0.00")).ToString().Replace(",", ".");
 
                 var pix = new Payload(
                 nome: "Saviane Da Silva de Souza",
@@ -34,16 +48,33 @@ namespace SavianeRifa.Controllers
 
         }
 
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet("/rifas")]
+        public IActionResult Rifas(int page = 1, int pageSize = 100)
+        {
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 100;
+
+            var totalCount = _context.Rifas.Count();
+
+            var items = _context.Rifas
+                .AsNoTracking()
+                .OrderBy(r => r.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => new {
+                    id = r.Id,
+                    number = r.Number,
+                    status = r.Status,
+                    price = r.Price
+                })
+                .ToList();
+
+            return Json(new { items, totalCount });
         }
 
         public IActionResult Privacy()

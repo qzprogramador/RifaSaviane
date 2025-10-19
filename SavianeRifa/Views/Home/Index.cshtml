@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -66,17 +67,56 @@
 
 @section Scripts {
     <script>
-        // Dados de exemplo. Quando integrar ao backend, gere esse JSON no servidor e substitua aqui.
-        const rifas = [
-            { id: 1, numero: '001', preco: 10.00, vendido: false },
-            { id: 2, numero: '002', preco: 10.00, vendido: true },
-            { id: 3, numero: '003', preco: 10.00, vendido: false },
-            { id: 4, numero: '004', preco: 10.00, vendido: false },
-            { id: 5, numero: '005', preco: 10.00, vendido: true },
-            { id: 6, numero: '006', preco: 10.00, vendido: false }
-        ];
+        // Inicialização: configuração de paginação
+        const pageSize = 100;
+        const maxPages = 5; // mostrar até 5 páginas
+        let currentPage = 1;
+        let totalRifas = 0;
+        let rifas = [];
+        const pixKey = document.getElementById('pix-key'); // substitua pela chave real
 
-        const pixKey = document.getElementById('pix-key') // substitua pela chave real
+        function fetchPage(page){
+            fetch(`/rifas?page=${page}&pageSize=${pageSize}`)
+                .then(r => r.json())
+                .then(data => {
+                    rifas = data.items || [];
+                    totalRifas = data.totalCount || 0;
+                    currentPage = page;
+                    renderRifas();
+                    renderPagination();
+                })
+                .catch(err => {
+                    console.error('Erro ao carregar rifas:', err);
+                    rifas = [];
+                    totalRifas = 0;
+                    renderRifas();
+                    renderPagination();
+                });
+        }
+
+        function renderPagination(){
+            const totalPages = Math.min(maxPages, Math.ceil(totalRifas / pageSize) || 1);
+            const containerId = 'rifas-pagination';
+            let container = document.getElementById(containerId);
+            if(!container){
+                container = document.createElement('div');
+                container.id = containerId;
+                container.className = 'mt-3 d-flex justify-content-center gap-2';
+                const parent = document.querySelector('.col-12');
+                parent.appendChild(container);
+            }
+            container.innerHTML = '';
+            for(let p = 1; p <= totalPages; p++){
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm ' + (p===currentPage ? 'btn-primary' : 'btn-outline-primary');
+                btn.textContent = p;
+                btn.addEventListener('click', ()=> fetchPage(p));
+                container.appendChild(btn);
+            }
+        }
+
+        // buscar primeira página ao iniciar
+        fetchPage(1);
 
         function formatBRL(v){
             return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -97,11 +137,11 @@
 
                 const title = document.createElement('h5');
                 title.className = 'card-title';
-                title.textContent = 'Rifa ' + r.numero;
+                title.textContent = 'Rifa ' + r.number;
 
                 const price = document.createElement('p');
                 price.className = 'card-text mb-2';
-                price.textContent = formatBRL(r.preco);
+                price.textContent = formatBRL(r.price);
 
                 const footer = document.createElement('div');
                 footer.className = 'mt-auto';
@@ -114,23 +154,31 @@
                 checkbox.className = 'form-check-input select-rifa';
                 checkbox.id = 'rifa-' + r.id;
                 checkbox.dataset.id = r.id;
-                checkbox.dataset.price = r.preco;
-                if(r.vendido){
+                checkbox.dataset.price = r.price;
+                if(r.status === 'Disponivel'){
+                    checkbox.disabled = false;
+                }
+                else{
                     checkbox.disabled = true;
                 }
 
                 const label = document.createElement('label');
                 label.className = 'form-check-label';
                 label.htmlFor = checkbox.id;
-                label.textContent = r.vendido ? 'Vendida' : 'Disponível';
+                label.textContent = r.status;
 
                 inputGroup.appendChild(checkbox);
                 inputGroup.appendChild(label);
 
-                if(r.vendido){
+                if(r.status === 'Vendida'){
                     const soldBadge = document.createElement('span');
                     soldBadge.className = 'badge bg-danger ms-2';
                     soldBadge.textContent = 'VENDIDA';
+                    inputGroup.appendChild(soldBadge);
+                }else if(r.status === "Reservada"){
+                    const soldBadge = document.createElement('span');
+                    soldBadge.className = 'badge bg-warning ms-2';
+                    soldBadge.textContent = 'RESERVADA';
                     inputGroup.appendChild(soldBadge);
                 }
 
@@ -214,7 +262,6 @@
             }
         });
 
-        // Inicialização
-        renderRifas();
+    // Observação: renderRifas é chamado após a fetch preencher `rifas`.
     </script>
 }

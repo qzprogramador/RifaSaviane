@@ -13,27 +13,19 @@ builder.Services.AddDbContext<SavianeRifa.Data.AppDbContext>(options =>
 
 var app = builder.Build();
 
-// Ensure database is created and migrations are applied at startup
+// Ensure database is created/migrated and seed data at startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var db = services.GetRequiredService<SavianeRifa.Data.AppDbContext>();
-        // Try to apply migrations; if none exist, EnsureCreated will create the DB
-        db.Database.Migrate();
+        SavianeRifa.Data.DbInitializer.EnsureSeedData(db);
     }
     catch (Exception ex)
     {
         var logger = services.GetService<ILogger<Program>>();
         logger?.LogError(ex, "An error occurred creating or migrating the database.");
-        // As a fallback, try EnsureCreated (useful for simple scenarios)
-        try
-        {
-            var db = services.GetRequiredService<SavianeRifa.Data.AppDbContext>();
-            db.Database.EnsureCreated();
-        }
-        catch { /* swallow */ }
     }
 }
 
