@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -9,13 +8,18 @@
             <div class="row g-0">
                 <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
                     <!-- Foto da cunhada: substitua a src pela foto real -->
-                    <img id="foto-cunhada" src="/img/saviane.jpeg" alt="Foto da beneficiária" class="img-fluid rounded" style="max-height:250px; object-fit:cover;" />
+                    <img id="foto-cunhada" src="/img/saviane.jpeg" alt="Foto da beneficiária" class="img-fluid rounded"
+                        style="max-height:250px; object-fit:cover;" />
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
                         <h2 class="card-title">Ajude com o tratamento</h2>
-                        <p class="card-text">Este projeto tem por objetivo arrecadar fundos para ajudar nos custos do tratamento da minha cunhada, que é portadora de insuficiência renal. Ao adquirir rifas você estará contribuindo diretamente com consultas, medicamentos e deslocamentos. Obrigado pelo apoio.</p>
-                        <p class="card-text"><small class="text-muted">Escolha uma ou mais rifas abaixo. Rifas já vendidas aparecem desabilitadas.</small></p>
+                        <p class="card-text">Este projeto tem por objetivo arrecadar fundos para ajudar nos custos do
+                            tratamento da minha cunhada, que é portadora de insuficiência renal. Ao adquirir rifas você
+                            estará contribuindo diretamente com consultas, medicamentos e deslocamentos. Obrigado pelo
+                            apoio.</p>
+                        <p class="card-text"><small class="text-muted">Escolha uma ou mais rifas abaixo. Rifas já
+                                vendidas aparecem desabilitadas.</small></p>
                     </div>
                 </div>
             </div>
@@ -27,7 +31,8 @@
             <h3>Rifas disponíveis</h3>
             <div>
                 <span class="me-3">Selecionadas: <span id="selected-count">0</span></span>
-                <button id="concluir-btn" class="btn btn-primary" disabled data-bs-toggle="modal" data-bs-target="#pixModal">Concluir compra</button>
+                <button id="concluir-btn" class="btn btn-primary" disabled data-bs-toggle="modal"
+                    data-bs-target="#pixModal">Concluir compra</button>
             </div>
         </div>
 
@@ -39,43 +44,47 @@
 
 <!-- Modal PIX -->
 <div class="modal fade" id="pixModal" tabindex="-1" aria-labelledby="pixModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="pixModalLabel">Pagamento via PIX</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <p>Escaneie o QRCode abaixo com o app do seu banco ou copie a chave PIX.</p>
-        <img id="pix-qr" src="" alt="QR Code PIX" class="img-fluid mb-3" style="max-width:260px;" />
-        <div>
-            <strong>Chave PIX:</strong>
-            <div class="input-group mb-2 justify-content-center" style="max-width:420px;">
-                <input type="text" id="pix-key" class="form-control text-center" readonly value="" />
-                <button class="btn btn-outline-secondary" id="copy-pix">Copiar</button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pixModalLabel">Pagamento via PIX</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Escaneie o QRCode abaixo com o app do seu banco ou copie a chave PIX.</p>
+                <img id="pix-qr" src="" alt="QR Code PIX" class="img-fluid mb-3" style="max-width:260px;" />
+                <div>
+                    <strong>Chave PIX:</strong>
+                    <div class="input-group mb-2 justify-content-center" style="max-width:420px;">
+                        <input type="text" id="pix-key" class="form-control text-center" readonly value="" />
+                        <button class="btn btn-outline-secondary" id="copy-pix">Copiar</button>
+                    </div>
+                </div>
+                <p class="mt-2">Total: <strong id="total-amount">R$ 0,00</strong></p>
+                <small class="text-muted">Após a confirmação do pagamento, registre os dados para finalizar a venda
+                    (ex.: nome, telefone).</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
             </div>
         </div>
-        <p class="mt-2">Total: <strong id="total-amount">R$ 0,00</strong></p>
-        <small class="text-muted">Após a confirmação do pagamento, registre os dados para finalizar a venda (ex.: nome, telefone).</small>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-      </div>
     </div>
-  </div>
 </div>
 
 @section Scripts {
     <script>
         // Inicialização: configuração de paginação
-        const pageSize = 50;
-        const maxPages = 10; // mostrar até 5 páginas
+        const pageSize = 100;
+        const maxPages = 5; // mostrar até 5 páginas
         let currentPage = 1;
         let totalRifas = 0;
         let rifas = [];
+
+        // Mapa de seleções persistente entre páginas: id -> price
+        const selectedMap = new Map();
         const pixKey = document.getElementById('pix-key'); // substitua pela chave real
 
-        function fetchPage(page){
+        function fetchPage(page) {
             fetch(`/rifas?page=${page}&pageSize=${pageSize}`)
                 .then(r => r.json())
                 .then(data => {
@@ -94,11 +103,11 @@
                 });
         }
 
-        function renderPagination(){
+        function renderPagination() {
             const totalPages = Math.min(maxPages, Math.ceil(totalRifas / pageSize) || 1);
             const containerId = 'rifas-pagination';
             let container = document.getElementById(containerId);
-            if(!container){
+            if (!container) {
                 container = document.createElement('div');
                 container.id = containerId;
                 container.className = 'mt-3 d-flex justify-content-center gap-2';
@@ -106,11 +115,11 @@
                 parent.appendChild(container);
             }
             container.innerHTML = '';
-            for(let p = 1; p <= totalPages; p++){
+            for (let p = 1; p <= totalPages; p++) {
                 const btn = document.createElement('button');
-                btn.className = 'btn btn-sm ' + (p===currentPage ? 'btn-primary' : 'btn-outline-primary');
+                btn.className = 'btn btn-sm ' + (p === currentPage ? 'btn-primary' : 'btn-outline-primary');
                 btn.textContent = p;
-                btn.addEventListener('click', ()=> fetchPage(p));
+                btn.addEventListener('click', () => fetchPage(p));
                 container.appendChild(btn);
             }
         }
@@ -118,11 +127,11 @@
         // buscar primeira página ao iniciar
         fetchPage(1);
 
-        function formatBRL(v){
+        function formatBRL(v) {
             return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        function renderRifas(){
+        function renderRifas() {
             const container = document.getElementById('rifas-list');
             container.innerHTML = '';
             rifas.forEach(r => {
@@ -155,12 +164,30 @@
                 checkbox.id = 'rifa-' + r.id;
                 checkbox.dataset.id = r.id;
                 checkbox.dataset.price = r.price;
-                if(r.status === 'Disponivel'){
+                // habilitar apenas se disponível
+                if (r.status === 'Disponivel') {
                     checkbox.disabled = false;
                 }
-                else{
+                else {
                     checkbox.disabled = true;
                 }
+
+                // restaurar estado da seleção se já escolhido em outra página
+                if (selectedMap.has(String(r.id))) {
+                    checkbox.checked = true;
+                }
+
+                // quando mudar, atualizamos o mapa persistente
+                checkbox.addEventListener('change', function () {
+                    const id = String(this.dataset.id);
+                    const price = parseFloat(this.dataset.price || 0);
+                    if (this.checked) {
+                        selectedMap.set(id, price);
+                    } else {
+                        selectedMap.delete(id);
+                    }
+                    updateSelectedUI();
+                });
 
                 const label = document.createElement('label');
                 label.className = 'form-check-label';
@@ -170,12 +197,12 @@
                 inputGroup.appendChild(checkbox);
                 inputGroup.appendChild(label);
 
-                if(r.status === 'Vendida'){
+                if (r.status === 'Vendida') {
                     const soldBadge = document.createElement('span');
                     soldBadge.className = 'badge bg-danger ms-2';
                     soldBadge.textContent = 'VENDIDA';
                     inputGroup.appendChild(soldBadge);
-                }else if(r.status === "Reservada"){
+                } else if (r.status === "Reservada") {
                     const soldBadge = document.createElement('span');
                     soldBadge.className = 'badge bg-warning ms-2';
                     soldBadge.textContent = 'RESERVADA';
@@ -193,27 +220,27 @@
                 container.appendChild(col);
             });
 
-            // attach change handlers
-            document.querySelectorAll('.select-rifa').forEach(cb => cb.addEventListener('change', onSelectionChange));
-            onSelectionChange();
+            // atualizar UI de seleção (contagem / botão) de acordo com o mapa persistente
+            updateSelectedUI();
         }
 
-        function onSelectionChange(){
-            const selected = Array.from(document.querySelectorAll('.select-rifa:checked'));
-            const count = selected.length;
+        function updateSelectedUI() {
+            const count = selectedMap.size;
             document.getElementById('selected-count').textContent = count;
             const concluirBtn = document.getElementById('concluir-btn');
             concluirBtn.disabled = count === 0;
         }
 
-        function calculateTotal(){
-            const selected = Array.from(document.querySelectorAll('.select-rifa:checked'));
-            const total = selected.reduce((s, el) => s + parseFloat(el.dataset.price || 0), 0);
+        function calculateTotal() {
+            let total = 0;
+            for (const price of selectedMap.values()) {
+                total += Number(price || 0);
+            }
             return total;
         }
 
         // Antes de abrir o modal, atualizar QR e total
-        document.getElementById('concluir-btn').addEventListener('click', function(){
+        document.getElementById('concluir-btn').addEventListener('click', function () {
             const total = calculateTotal();
             document.getElementById('total-amount').textContent = formatBRL(total);
 
@@ -250,18 +277,18 @@
         });
 
         // copiar chave PIX
-        document.getElementById('copy-pix').addEventListener('click', function(){
+        document.getElementById('copy-pix').addEventListener('click', function () {
             const keyEl = document.getElementById('pix-key');
             keyEl.select();
-            try{
+            try {
                 document.execCommand('copy');
                 this.textContent = 'Copiado';
-                setTimeout(()=> this.textContent = 'Copiar', 2000);
-            }catch(e){
+                setTimeout(() => this.textContent = 'Copiar', 2000);
+            } catch (e) {
                 alert('Selecione e copie a chave manualmente: ' + keyEl.value);
             }
         });
 
-    // Observação: renderRifas é chamado após a fetch preencher `rifas`.
+        // Observação: renderRifas é chamado após a fetch preencher `rifas`.
     </script>
 }
