@@ -5,6 +5,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Configure CORS - allow all origins (use carefully in production)
+var corsPolicyName = "AllowAll";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicyName,
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 // Configure EF Core with SQL Server. Ensure the package Microsoft.EntityFrameworkCore.SqlServer is installed.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=DESKTOP-8I4A0RA\\ANDREY;Database=SavianeRifa;User Id=sa;Password=yerdna15043733;TrustServerCertificate=True;";
 builder.Services.AddDbContext<SavianeRifa.Data.AppDbContext>(options =>
@@ -37,6 +50,9 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Enable CORS globally
+app.UseCors(corsPolicyName);
 
 app.UseAuthorization();
 

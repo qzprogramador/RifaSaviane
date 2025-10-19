@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36212.18 d17.14
+VisualStudioVersion = 17.14.36212.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavianeRifa", "SavianeRifa\SavianeRifa.csproj", "{576F6DD2-AF48-42DF-B1AE-6B0DDE6A3FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerenciadorDasRifas", "GerenciadorDasRifas\GerenciadorDasRifas.csproj", "{59D345C5-B9A5-425C-A592-174FEE31F360}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{576F6DD2-AF48-42DF-B1AE-6B0DDE6A3FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{576F6DD2-AF48-42DF-B1AE-6B0DDE6A3FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{576F6DD2-AF48-42DF-B1AE-6B0DDE6A3FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59D345C5-B9A5-425C-A592-174FEE31F360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D345C5-B9A5-425C-A592-174FEE31F360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D345C5-B9A5-425C-A592-174FEE31F360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D345C5-B9A5-425C-A592-174FEE31F360}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
