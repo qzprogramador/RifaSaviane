@@ -8,18 +8,29 @@ namespace SavianeRifa.Controllers
     public class HomeController : Controller
     {
         [HttpGet("/pix")]
-        public IActionResult Pix()
+        public IActionResult Pix(double total)
         {
-            var pix = new Payload(
-                nome: "ANDREY COSTA DE QUEIROZ",
+            string valorPix = "";
+            try
+            {
+                valorPix = double.Parse(total.ToString("0.00")).ToString().Replace(",", ".");
+                var pix = new Payload(
+                nome: "Saviane Da Silva de Souza",
                 chavepix: "02459626207",
-                valor: "500.00",
+                valor: valorPix,
                 cidade: "MANAUS",
                 txtId: "6909009062345"
             );
-            pix.GerarPayload();
-            return Ok(pix.PixCopiaCola);
-        }   
+                var qrcodeBase64 = pix.GerarPayload();
+                return Ok(new { Pix = pix.PixCopiaCola, QrCodeBase64 = qrcodeBase64 });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+
+        }
 
         private readonly ILogger<HomeController> _logger;
 

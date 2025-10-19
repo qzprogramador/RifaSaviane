@@ -8,7 +8,7 @@
             <div class="row g-0">
                 <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
                     <!-- Foto da cunhada: substitua a src pela foto real -->
-                    <img id="foto-cunhada" src="/images/foto-cunhada-placeholder.jpg" alt="Foto da beneficiária" class="img-fluid rounded" style="max-height:250px; object-fit:cover;" />
+                    <img id="foto-cunhada" src="/img/saviane.jpeg" alt="Foto da beneficiária" class="img-fluid rounded" style="max-height:250px; object-fit:cover;" />
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
@@ -50,7 +50,7 @@
         <div>
             <strong>Chave PIX:</strong>
             <div class="input-group mb-2 justify-content-center" style="max-width:420px;">
-                <input type="text" id="pix-key" class="form-control text-center" readonly value="00020126330014BR.GOV.BCB.PIX0111024596262075204000053039865406500.005802BR5923ANDREY COSTA DE QUEIROZ6006MANAUS610869090090623450300017BR.GOV.BCB.BRCODE01051.0.06304EB7E" />
+                <input type="text" id="pix-key" class="form-control text-center" readonly value="" />
                 <button class="btn btn-outline-secondary" id="copy-pix">Copiar</button>
             </div>
         </div>
@@ -76,7 +76,7 @@
             { id: 6, numero: '006', preco: 10.00, vendido: false }
         ];
 
-        const pixKey = document.getElementById('pix-key').value; // substitua pela chave real
+        const pixKey = document.getElementById('pix-key') // substitua pela chave real
 
         function formatBRL(v){
             return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -169,12 +169,36 @@
             const total = calculateTotal();
             document.getElementById('total-amount').textContent = formatBRL(total);
 
-            // Gera QRCode via API pública (troque pela sua geração/servidor quando preferir)
-            //const pixPayload = `pix:${pixKey}|amount:${total.toFixed(2)}`; // placeholder
-            //const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(pixKey + '|' + total.toFixed(2));
-            
-            const qrSrc = "data:image/png;base64,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"
-            document.getElementById('pix-qr').src = qrSrc;
+            // solicite ao servidor o payload/QRCode em base64 (endpoint de exemplo)
+            fetch('/pix?total=' + encodeURIComponent(total))
+                .then(response => {
+                    if (!response.ok) throw new Error('Erro na geração do PIX');
+                    return response.json();
+                })
+                .then(data => {
+                    // defina a chave PIX retornada (se houver)
+                    if (data.pix && document.getElementById('pix-key')) {
+                        document.getElementById('pix-key').value = data.pix;
+                    }
+
+                    // se servidor retornou QR em base64, use-o; caso contrário, fallback para gerar via serviço externo
+                    const base64qrcode = data.qrCodeBase64 || data.qr || null;
+                    if (base64qrcode) {
+                        document.getElementById('pix-qr').src = 'data:image/png;base64,' + base64qrcode;
+                    } else {
+                        // fallback: gerar QR com api pública usando a chave (pode ser apenas a chave)
+                        const payload = (document.getElementById('pix-key') && document.getElementById('pix-key').value) || '';
+                        const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(payload + '|' + total.toFixed(2));
+                        document.getElementById('pix-qr').src = qrSrc;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    // fallback simples em caso de erro
+                    const payload = (document.getElementById('pix-key') && document.getElementById('pix-key').value) || '';
+                    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(payload + '|' + total.toFixed(2));
+                    document.getElementById('pix-qr').src = qrSrc;
+                });
         });
 
         // copiar chave PIX

@@ -56,14 +56,18 @@ namespace SavianeRifa.Services
             MerchantCity = $"60{Cidade.Length:00}{Cidade}";
         }
 
-        public void GerarPayload()
+        public string GerarPayload()
         {
             string payload = $"{PayloadFormat}{MerchantAccount}{MerchantCategCode}{TransactionCurrency}{TransactionAmount}{CountryCode}{MerchantName}{MerchantCity}{AddDataField}{Crc16}";
             string crc16Code = CalcularCRC16(payload);
             PayloadCompleta = $"{payload}{crc16Code}";
 
-            GerarQrCode(PayloadCompleta, DiretorioQrCode);
+            // Gera o QRCode e obtém a imagem em Base64 (PNG)
+            string qrBase64 = GerarQrCode(PayloadCompleta, DiretorioQrCode);
             Console.WriteLine(PayloadCompleta);
+            return qrBase64;
+            // Opcional: exibir parte do base64 para verificação (comentado)
+            // Console.WriteLine(qrBase64);
         }
 
         private string CalcularCRC16(string payload)
@@ -87,17 +91,21 @@ namespace SavianeRifa.Services
             return crc.ToString("X4");
         }
 
-        private void GerarQrCode(string payload, string diretorio)
+        private string GerarQrCode(string payload, string diretorio)
         {
             using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
             {
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-                using (QRCode qrCode = new QRCode(qrCodeData))
-                using (var qrCodeImage = qrCode.GetGraphic(20))
-                {
-                    string path = Path.Combine(diretorio, "pixqrcodegen.png");
-                    qrCodeImage.Save(path, System.Drawing.Imaging.ImageFormat.Png);
-                }
+                // Use PngByteQRCode for cross-platform byte[] PNG generation
+                var png = new PngByteQRCode(qrCodeData);
+                byte[] bytes = png.GetGraphic(20);
+
+                // Salva em arquivo (compatibilidade)
+                string path = Path.Combine(diretorio, "pixqrcodegen.png");
+                File.WriteAllBytes(path, bytes);
+
+                // Retorna Base64 do PNG
+                return Convert.ToBase64String(bytes);
             }
         }
     }
