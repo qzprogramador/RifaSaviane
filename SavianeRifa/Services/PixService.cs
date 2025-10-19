@@ -101,8 +101,8 @@ namespace SavianeRifa.Services
                 byte[] bytes = png.GetGraphic(20);
 
                 // Salva em arquivo (compatibilidade)
-                string path = Path.Combine(diretorio, "pixqrcodegen.png");
-                File.WriteAllBytes(path, bytes);
+                //string path = Path.Combine(diretorio, "pixqrcodegen.png");
+                //File.WriteAllBytes(path, bytes);
 
                 // Retorna Base64 do PNG
                 return Convert.ToBase64String(bytes);

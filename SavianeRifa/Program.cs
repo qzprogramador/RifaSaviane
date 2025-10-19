@@ -5,10 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Configure EF Core with SQLite. Ensure the package Microsoft.EntityFrameworkCore.Sqlite is installed.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=rifas.db";
+// Configure EF Core with SQL Server. Ensure the package Microsoft.EntityFrameworkCore.SqlServer is installed.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=DESKTOP-8I4A0RA\\ANDREY;Database=SavianeRifa;User Id=sa;Password=yerdna15043733;TrustServerCertificate=True;";
 builder.Services.AddDbContext<SavianeRifa.Data.AppDbContext>(options =>
-    options.UseSqlite(connectionString)
+    options.UseSqlServer(connectionString)
 );
 
 var app = builder.Build();

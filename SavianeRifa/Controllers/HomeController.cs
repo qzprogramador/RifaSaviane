@@ -62,11 +62,14 @@ namespace SavianeRifa.Controllers
 
             var totalCount = _context.Rifas.Count();
 
-            var items = _context.Rifas
+            // Some SQL Server versions or compatibility levels do not support OFFSET/FETCH.
+            // To avoid generating OFFSET in SQL, fetch the first (page * pageSize) rows using TOP (Take)
+            // and then do the final paging slice in memory. This avoids OFFSET/FETCH syntax errors on older servers.
+            var limit = page * pageSize;
+            var fetched = _context.Rifas
                 .AsNoTracking()
                 .OrderBy(r => r.Id)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Take(limit)
                 .Select(r => new {
                     id = r.Id,
                     number = r.Number,
@@ -74,6 +77,8 @@ namespace SavianeRifa.Controllers
                     price = r.Price
                 })
                 .ToList();
+
+            var items = fetched.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             return Json(new { items, totalCount });
         }
@@ -156,7 +161,7 @@ namespace SavianeRifa.Controllers
             string? savedFilePath = null;
             if (comprovante != null && comprovante.Length > 0)
             {
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "uploads");
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "../uploads");
                 if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
                 var fileName = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(comprovante.FileName);
                 var filePath = Path.Combine(uploadsPath, fileName);
