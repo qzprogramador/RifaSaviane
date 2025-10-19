@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-12 mb-4">
         <div class="card shadow-sm">
-            <div class="row g-0">
+            <div class="row g-0" style="background-color: #9b5de5; border-radius: .25rem;">
                 <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
                     <!-- Foto da cunhada: substitua a src pela foto real -->
                     <img id="foto-cunhada" src="/img/saviane.jpeg" alt="Foto da beneficiária" class="img-fluid rounded"
@@ -28,7 +28,7 @@
 
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h3>Rifas disponíveis</h3>
+            <h3 style="color: #6a0dad;">Rifas disponíveis</h3>
             <div>
                 <span class="me-3">Selecionadas: <span id="selected-count">0</span></span>
                 <button id="concluir-btn" class="btn btn-primary" disabled data-bs-toggle="modal"
@@ -170,11 +170,14 @@
                 const col = document.createElement('div');
                 col.className = 'col-6 col-md-4 col-lg-3';
 
+
                 const card = document.createElement('div');
                 card.className = 'card h-100';
 
                 const body = document.createElement('div');
                 body.className = 'card-body d-flex flex-column';
+                body.style.backgroundColor = "#9b5de5";
+                body.style.borderRadius = "0.25rem";
 
                 const title = document.createElement('h5');
                 title.className = 'card-title';
