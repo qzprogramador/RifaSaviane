@@ -9,7 +9,7 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(5000); // HTTP
     options.ListenAnyIP(5001, listenOptions =>
     {
-        listenOptions.UseHttps("C:\\meucertificado.pfx", "1234");
+        listenOptions.UseHttps("C:\\RifaSolidaria\\saviane_ddns_net.pfx", "1234");
     });
 });
 
