@@ -1,6 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar Kestrel para usar HTTPS com certificado .pfx
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5000); // HTTP
+    options.ListenAnyIP(5001, listenOptions =>
+    {
+        listenOptions.UseHttps("C:\\meucertificado.pfx", "1234");
+    });
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -18,8 +29,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Configure EF Core with SQL Server. Ensure the package Microsoft.EntityFrameworkCore.SqlServer is installed.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=DESKTOP-8I4A0RA\\ANDREY;Database=SavianeRifa;User Id=sa;Password=yerdna15043733;TrustServerCertificate=True;";
+// Configure EF Core with SQL Server
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Server=DESKTOP-8I4A0RA\\ANDREY;Database=SavianeRifa;User Id=sa;Password=yerdna15043733;TrustServerCertificate=True;";
 builder.Services.AddDbContext<SavianeRifa.Data.AppDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
