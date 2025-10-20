@@ -19,7 +19,7 @@ namespace SavianeRifa.Controllers
             _logger = logger;
             _context = context;
         }
-        
+
         [HttpGet("/pix")]
         public IActionResult Pix(double total)
         {
@@ -34,9 +34,9 @@ namespace SavianeRifa.Controllers
                 cidade: "MANAUS",
                 txtId: "6909009062345"
             );
-            
-            var qrcodeBase64 = pix.GerarPayload();
-            return Ok(new { Pix = pix.PixCopiaCola, QrCodeBase64 = qrcodeBase64 });
+
+                var qrcodeBase64 = pix.GerarPayload();
+                return Ok(new { Pix = pix.PixCopiaCola, QrCodeBase64 = qrcodeBase64 });
 
             }
             catch (Exception ex)
@@ -68,7 +68,8 @@ namespace SavianeRifa.Controllers
                 .AsNoTracking()
                 .OrderBy(r => r.Id)
                 .Take(limit)
-                .Select(r => new {
+                .Select(r => new
+                {
                     id = r.Id,
                     number = r.Number,
                     status = r.Status,
@@ -101,6 +102,7 @@ namespace SavianeRifa.Controllers
                     RegisteredAt = p.RegisteredAt,
                     Location = p.Location,
                     TotalRifas = p.Rifas.Count,
+                    Rifas = string.Join(", ", p.Rifas.Select(r=> r.Number).ToList()),
                     ReservedCount = p.Rifas.Count(r => r.Status == "Reservada"),
                     SoldCount = p.Rifas.Count(r => r.Status == "Vendida"),
                     Status = p.Rifas.Any(r => r.Status == "Reservada") ? "Reservada" : (p.Rifas.Any(r => r.Status == "Vendida") ? "Vendida" : "Nenhuma")
@@ -154,7 +156,7 @@ namespace SavianeRifa.Controllers
             string? savedFilePath = null;
             if (comprovante != null && comprovante.Length > 0)
             {
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory() , "../../uploads");
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "../../uploads");
                 if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
                 var fileName = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(comprovante.FileName);
                 var filePath = Path.Combine(uploadsPath, fileName);

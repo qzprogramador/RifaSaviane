@@ -12,5 +12,7 @@ namespace SavianeRifa.Models
         public int ReservedCount { get; set; }
         public int SoldCount { get; set; }
         public string Status { get; set; } = string.Empty;
+
+        public string Rifas { get; set; } = string.Empty;
     }
 }
