@@ -39,10 +39,10 @@
             img = new PictureBox();
             lblRifas = new ListBox();
             groupBox2 = new GroupBox();
-            btnrevogar = new Button();
-            btnvendido = new Button();
             lblstatus = new Label();
             lblrifa = new Label();
+            btnrevogar = new Button();
+            btnvendido = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)img).BeginInit();
             groupBox2.SuspendLayout();
@@ -54,7 +54,7 @@
             lbPendings.ItemHeight = 15;
             lbPendings.Location = new Point(12, 12);
             lbPendings.Name = "lbPendings";
-            lbPendings.Size = new Size(281, 379);
+            lbPendings.Size = new Size(186, 214);
             lbPendings.TabIndex = 0;
             lbPendings.SelectedIndexChanged += lbPendings_SelectedIndexChanged;
             // 
@@ -65,7 +65,7 @@
             groupBox1.Controls.Add(lbldata);
             groupBox1.Controls.Add(lbltotal);
             groupBox1.Controls.Add(lblNome);
-            groupBox1.Location = new Point(315, 14);
+            groupBox1.Location = new Point(204, 12);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(225, 216);
             groupBox1.TabIndex = 1;
@@ -120,6 +120,7 @@
             // 
             // button1
             // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             button1.Location = new Point(12, 398);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
@@ -130,9 +131,12 @@
             // 
             // img
             // 
-            img.Location = new Point(546, 14);
+            img.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            img.BackColor = SystemColors.ActiveCaptionText;
+            img.Location = new Point(435, 23);
             img.Name = "img";
-            img.Size = new Size(231, 216);
+            img.Size = new Size(353, 364);
+            img.SizeMode = PictureBoxSizeMode.Zoom;
             img.TabIndex = 4;
             img.TabStop = false;
             // 
@@ -140,43 +144,22 @@
             // 
             lblRifas.FormattingEnabled = true;
             lblRifas.ItemHeight = 15;
-            lblRifas.Location = new Point(315, 236);
+            lblRifas.Location = new Point(12, 233);
             lblRifas.Name = "lblRifas";
-            lblRifas.Size = new Size(225, 154);
+            lblRifas.Size = new Size(186, 154);
             lblRifas.TabIndex = 5;
             lblRifas.SelectedIndexChanged += lblRifas_SelectedIndexChanged;
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(btnrevogar);
-            groupBox2.Controls.Add(btnvendido);
             groupBox2.Controls.Add(lblstatus);
             groupBox2.Controls.Add(lblrifa);
-            groupBox2.Location = new Point(546, 236);
+            groupBox2.Location = new Point(204, 234);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(231, 155);
+            groupBox2.Size = new Size(225, 155);
             groupBox2.TabIndex = 5;
             groupBox2.TabStop = false;
             groupBox2.Text = "Rifa";
-            // 
-            // btnrevogar
-            // 
-            btnrevogar.Location = new Point(69, 126);
-            btnrevogar.Name = "btnrevogar";
-            btnrevogar.Size = new Size(75, 23);
-            btnrevogar.TabIndex = 5;
-            btnrevogar.Text = "Revogar";
-            btnrevogar.UseVisualStyleBackColor = true;
-            // 
-            // btnvendido
-            // 
-            btnvendido.Location = new Point(150, 126);
-            btnvendido.Name = "btnvendido";
-            btnvendido.Size = new Size(75, 23);
-            btnvendido.TabIndex = 4;
-            btnvendido.Text = "Vendido";
-            btnvendido.UseVisualStyleBackColor = true;
-            btnvendido.Click += btnvendido_Click;
             // 
             // lblstatus
             // 
@@ -196,11 +179,34 @@
             lblrifa.TabIndex = 0;
             lblrifa.Text = "Código";
             // 
+            // btnrevogar
+            // 
+            btnrevogar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnrevogar.Location = new Point(278, 399);
+            btnrevogar.Name = "btnrevogar";
+            btnrevogar.Size = new Size(75, 23);
+            btnrevogar.TabIndex = 5;
+            btnrevogar.Text = "Revogar";
+            btnrevogar.UseVisualStyleBackColor = true;
+            // 
+            // btnvendido
+            // 
+            btnvendido.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnvendido.Location = new Point(354, 399);
+            btnvendido.Name = "btnvendido";
+            btnvendido.Size = new Size(75, 23);
+            btnvendido.TabIndex = 4;
+            btnvendido.Text = "Vendido";
+            btnvendido.UseVisualStyleBackColor = true;
+            btnvendido.Click += btnvendido_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnvendido);
+            Controls.Add(btnrevogar);
             Controls.Add(groupBox2);
             Controls.Add(lblRifas);
             Controls.Add(img);
